@@ -1,5 +1,7 @@
 <?php
 
+require_once(dirname(__FILE__). '/MyBoard.php');
+
 class MyGame{
  	var $board ;
  	var $currentdirection = 's'; // default: poiting down
@@ -7,11 +9,13 @@ class MyGame{
  	var $lastposition; // default: in 0,0
  	var $lastdirection;
  	var $directions = 'nesw';
+ 	var $history = array();
+ 	var $gameStatus = 'unfinished';
 
 	function __construct(){
 		$this->lastdirection = $this->currentdirection;
 		$this->lastposition = $this->currentposition;
-		$this->board = array(10,12);
+		$this->board = new MyBoard(array(10,12), array());
 	}
 
 	function getBoard(){
@@ -47,23 +51,40 @@ class MyGame{
 
 		//y axis
 		if($this->currentdirection == 's'){  $newpos = $this->currentposition[1]+$m;
-			if($newpos >= 0 && $newpos<=$this->board[1] ){ $this->currentposition[1]=$this->currentposition[1]+$m;}
+			if($newpos >= 0 && $newpos<=$this->board->getHeight() ){ $this->currentposition[1]=$this->currentposition[1]+$m;}
 		}elseif ( $this->currentdirection == 'n' ){
 			$newpos = $this->currentposition[1]-$m;	
-			if($newpos >= 0 && $newpos<=$this->board[1]){$this->currentposition[1]=$this->currentposition[1]-$m;}
+			if($newpos >= 0 && $newpos<=$this->board->getHeight()){$this->currentposition[1]=$this->currentposition[1]-$m;}
 		//x axis
 		}elseif ( $this->currentdirection == 'e' ){
 			$newpos = $this->currentposition[0]+$m;	
-			if($newpos >= 0 && $newpos<=$this->board[0]){$this->currentposition[0]=$this->currentposition[0]+$m;}
+			if($newpos >= 0 && $newpos<=$this->board->getWidth()){$this->currentposition[0]=$this->currentposition[0]+$m;}
 
 		}elseif ( $this->currentdirection == 'w' ){ 
 			$newpos = $this->currentposition[0]-$m;	
-			if($newpos >= 0 && $newpos<=$this->board[0]){$this->currentposition[0]=$this->currentposition[0]-$m;}
+			if($newpos >= 0 && $newpos<=$this->board->getWidth()){$this->currentposition[0]=$this->currentposition[0]-$m;}
 		}
-
+		if($this->lastposition != $this->currentposition){
+			array_push($this->history, $m);
+		}
 		//print " currentposition = ".print_r($this->currentposition,true) ."\n";
 		return $this->currentposition;
 	}
+
+	function getPlayerStatus(){
+		return array(
+				'direction'=>$this->currentdirection,
+				'position'=>$this->currentposition,
+				'history'=>$this->history,
+				'gameStatus'=>$this->gameStatus	
+			);
+	}
+
+	function getBoardStatus(){
+		return $this->board->getStatus();		
+	}
+
+
 
 }
 ?>

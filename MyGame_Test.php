@@ -1,6 +1,6 @@
 <?php
-require_once('/Library/WebServer/Documents/simpletest/autorun.php');
-require_once('./MyGame.php');
+require_once(dirname(__FILE__) .'/../../simpletest/autorun.php');
+require_once(dirname(__FILE__) .'/MyGame.php');
 class GameTestCase extends UnitTestCase {
 
 	function testCreation() {
@@ -72,16 +72,31 @@ class GameTestCase extends UnitTestCase {
       $g = new MyGame();
       $distance = 1;
       $g->changePosition($distance);
-      $this->assertTrue( ($g->currentposition[1] - $distance) == ($g->lastposition[1]) );
+      $this->assertTrue( ($g->currentposition[1] - $distance) == $g->lastposition[1]);
       print " Curr = ".$g->currentposition[1];
-      print " / Last = ".$g->lastposition[1];
+      print "/ Last = ".$g->lastposition[1]."\n";
        
     }
-    
-/*    function testCanOnlyMoveOneAtATime(){
+
+    function testHistoryUpdated(){
       $g = new MyGame();
+      $g->changePosition(1);
+      $g->changePosition(3);
       $g->changePosition(2);
-      $this->assertFalse($g->currentposition != $g->lastposition);
-    }*/
+      $g->changePosition(99);
+      $g->changePosition(4);
+      $this->assertTrue( $g->history == array(1,3,2,4) );
+
+      //print_r($g->getPlayerStatus());
+    }
+
+    
+
+    function testShowPlayerStatus(){
+      $g = new MyGame();
+      $this->assertNotNull( $s = $g->getPlayerStatus() );
+      print_r($s);
+    }
+    
 }
 ?>

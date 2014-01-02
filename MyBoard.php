@@ -10,6 +10,7 @@ class MyBoard {
 
 	function __construct($d = array(10,10), $o=array(array(8,8)) ){
 		$this->dimensions = $d;
+
 		$this->obstructions = $o;
 	}
 
@@ -21,6 +22,11 @@ class MyBoard {
 		return $this->dimensions[1];
 	}
 
+	function getFinish(){
+		// finish is bottom right, for this game
+		return array($this->getWidth(), $this->getHeight());
+	}
+	
 	function getStatus(){
 		return array(
 			'boardName'=>$this->boardName,

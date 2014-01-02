@@ -18,13 +18,17 @@ class BoardTestCase extends UnitTestCase {
         $b = new MyBoard($d, $o);
         $this->assertEqual($b->dimensions, $d);
         $this->assertEqual($b->obstructions, $o);
-
       }
 
      function testGetValuesByName(){
      	$b = new MyBoard();
      	$this->assertNotNull($b->getWidth());
      	$this->assertNotNull($b->getHeight());
+     } 
+
+     function testGetFinish(){
+        $b = new MyBoard();
+        $this->assertNotNull($b->getFinish());
      } 
 
      function testShowBoardStatus(){

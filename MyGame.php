@@ -1,5 +1,4 @@
 <?php
-
 require_once(dirname(__FILE__). '/MyBoard.php');
 
 class MyGame{
@@ -12,10 +11,14 @@ class MyGame{
  	var $history = array();
  	var $gameStatus = 'unfinished';
 
-	function __construct(){
+	function __construct($d=null,$obs=null){
 		$this->lastdirection = $this->currentdirection;
 		$this->lastposition = $this->currentposition;
-		$this->board = new MyBoard(array(10,12), array());
+		if($d==null && $obs==null){
+			$this->board = new MyBoard(array(10,12), array());
+		}else{
+			$this->board = new MyBoard($d, $obs);			
+		}
 	}
 
 	function getBoard(){
@@ -24,6 +27,10 @@ class MyGame{
 
 	function getDirection(){
 		return $this->currentdirection;
+	}
+	
+	function getFinish(){
+		return $this->board->getFinish();
 	}
 
 	function changeDirection($d){
@@ -35,11 +42,14 @@ class MyGame{
 		if(($targetindex - $currentindex) > 1 || ($targetindex - $currentindex) < -1){
 			print "\nfail ".$targetindex ."-". $currentindex." = ".($targetindex - $currentindex)."\n";
 			print substr($this->directions,$targetindex,1) ."->". substr($this->directions,$currentindex,1)." = ".($targetindex - $currentindex)."\n";
+			array_push($this->history, array('failed direction'=>$d));
+
 			return false;
 		}
 
 		$this->lastdirection = $this->currentdirection;
 		$this->currentdirection = $d;
+		array_push($this->history, array('direction'=>$d));
 	}
 
 	function getPosition(){
@@ -65,7 +75,9 @@ class MyGame{
 			if($newpos >= 0 && $newpos<=$this->board->getWidth()){$this->currentposition[0]=$this->currentposition[0]-$m;}
 		}
 		if($this->lastposition != $this->currentposition){
-			array_push($this->history, $m);
+			array_push($this->history, array('move'=>$m));
+		}else{
+			array_push($this->history, array('failed move to'=>$newpos ) ) ;
 		}
 		//print " currentposition = ".print_r($this->currentposition,true) ."\n";
 		return $this->currentposition;

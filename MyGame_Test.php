@@ -8,6 +8,16 @@ class GameTestCase extends UnitTestCase {
         $this->assertTrue($g);
     }
 
+  function testCustomCreation() {
+        $g = new MyGame(array(5,7), array( array(2,2), array(4,1) ) );
+        $this->assertTrue($g);
+        $this->assertTrue(
+            $g->board->getWidth() == 5 &&
+            $g->board->getHeight() == 7 &&
+            $g->board->obstructions[0] == array(2,2) 
+            );
+    }
+
     function testHasBoard(){
        $g = new MyGame();
        $this->assertNotNull($g->getBoard());
@@ -45,7 +55,6 @@ class GameTestCase extends UnitTestCase {
     function testPosition(){
       $g = new MyGame();
       $this->assertNotNull($g->getPosition());
-    
     }
 
     function testChangePositionY(){
@@ -64,7 +73,7 @@ class GameTestCase extends UnitTestCase {
     function testCantMoveOutOfBounds(){
       $g = new MyGame();
       $originalposition = $g->getPosition();
-      $g->changePosition(-1); // backwards-up since default is south
+      $g->changePosition(-1); // backwards=up since default is south
       $this->assertTrue(($g->currentposition == $originalposition ) );
     }
 
@@ -83,19 +92,23 @@ class GameTestCase extends UnitTestCase {
       $g->changePosition(1);
       $g->changePosition(3);
       $g->changePosition(2);
-      $g->changePosition(99);
+      $g->changePosition(10);
       $g->changePosition(4);
-      $this->assertTrue( $g->history == array(1,3,2,4) );
+      $this->assertTrue( $g->history == array(
+          array('move'=>1),
+          array('move'=>3),
+          array('move'=>2),
+          array('failed move to' => 16),
+          array('move'=>4)) 
+      );
 
-      //print_r($g->getPlayerStatus());
+      print_r($g->getPlayerStatus());
     }
-
-    
 
     function testShowPlayerStatus(){
       $g = new MyGame();
       $this->assertNotNull( $s = $g->getPlayerStatus() );
-      print_r($s);
+      //print_r($s);
     }
     
 }

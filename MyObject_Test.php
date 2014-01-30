@@ -1,5 +1,5 @@
 <?php
-require_once('/Library/WebServer/Documents/simpletest/autorun.php');
+require_once('/Library/WebServer/Documents/MonacoWork/simpletest/autorun.php');
 require_once('./MyObject.php');
 class FileTestCase extends UnitTestCase {
 

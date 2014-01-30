@@ -1,11 +1,13 @@
 <?php
-require_once(dirname(__FILE__) .'/../../simpletest/autorun.php');
+require_once('/Library/WebServer/Documents/MonacoWork/simpletest/autorun.php');
 require_once(dirname(__FILE__) .'/MyGame.php');
 class GameTestCase extends UnitTestCase {
 
 	function testCreation() {
         $g = new MyGame();
         $this->assertTrue($g);
+
+          print $this->onFunctionEnd(__FUNCTION__);
     }
 
   function testCustomCreation() {
@@ -16,22 +18,29 @@ class GameTestCase extends UnitTestCase {
             $g->board->getHeight() == 7 &&
             $g->board->obstructions[0] == array(2,2) 
             );
+          print $this->onFunctionEnd(__FUNCTION__);
     }
 
     function testHasBoard(){
        $g = new MyGame();
        $this->assertNotNull($g->getBoard());
+             print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testDirection(){
        $g = new MyGame();
        $this->assertNotNull($g->getDirection());
+             print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testTurnWest(){
        $g = new MyGame();
        $g->changeDirection('w');
        $this->assertTrue($g->currentdirection != $g->lastdirection);
+             print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testCantTurn180(){
@@ -50,17 +59,24 @@ class GameTestCase extends UnitTestCase {
 
        $g->changeDirection('w');
        $this->assertTrue($g->currentdirection == 'w');
+
+             print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testPosition(){
       $g = new MyGame();
       $this->assertNotNull($g->getPosition());
+            print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testChangePositionY(){
       $g = new MyGame();
       $g->changePosition(1);
       $this->assertTrue($g->currentposition != $g->lastposition);
+            print $this->onFunctionEnd(__FUNCTION__);
+    
     }
 
     function testChangePositionX(){
@@ -68,6 +84,7 @@ class GameTestCase extends UnitTestCase {
       $g->changeDirection('e');
       $g->changePosition(5);
       $this->assertTrue($g->currentposition != $g->lastposition);
+      print $this->onFunctionEnd(__FUNCTION__);
     }
     
     function testCantMoveOutOfBounds(){
@@ -75,6 +92,9 @@ class GameTestCase extends UnitTestCase {
       $originalposition = $g->getPosition();
       $g->changePosition(-1); // backwards=up since default is south
       $this->assertTrue(($g->currentposition == $originalposition ) );
+
+      print "==== End ".__FUNCTION__. "====\n";
+      print $this->onFunctionEnd(__FUNCTION__);
     }
 
     function testMovedCorrectDistance(){
@@ -82,9 +102,10 @@ class GameTestCase extends UnitTestCase {
       $distance = 1;
       $g->changePosition($distance);
       $this->assertTrue( ($g->currentposition[1] - $distance) == $g->lastposition[1]);
-      print " Curr = ".$g->currentposition[1];
-      print "/ Last = ".$g->lastposition[1]."\n";
-       
+      //print " Curr = ".$g->currentposition[1];
+      //print "/ Last = ".$g->lastposition[1]."\n";
+      print $this->onFunctionEnd(__FUNCTION__);
+           
     }
 
     function testHistoryUpdated(){
@@ -92,23 +113,30 @@ class GameTestCase extends UnitTestCase {
       $g->changePosition(1);
       $g->changePosition(3);
       $g->changePosition(2);
-      $g->changePosition(10);
+      $g->changePosition(4);
       $g->changePosition(4);
       $this->assertTrue( $g->history == array(
           array('move'=>1),
           array('move'=>3),
           array('move'=>2),
-          array('failed move to' => 16),
-          array('move'=>4)) 
+          array('move'=>4),
+          array('failed move due to out-of-bounds' => 4),
+       ) 
       );
 
       print_r($g->getPlayerStatus());
+      print $this->onFunctionEnd(__FUNCTION__);
     }
 
     function testShowPlayerStatus(){
       $g = new MyGame();
       $this->assertNotNull( $s = $g->getPlayerStatus() );
       //print_r($s);
+      print $this->onFunctionEnd(__FUNCTION__);
+    }
+
+    function onFunctionEnd($f){
+      print "==== End ".$f. " ====\n";
     }
     
 }

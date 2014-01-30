@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(__FILE__) .'/../../simpletest/autorun.php');
+require_once('/Library/WebServer/Documents/MonacoWork/simpletest/autorun.php');
+
     
 class AllTests extends TestSuite {
     function AllTests() {

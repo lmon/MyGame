@@ -38,7 +38,7 @@ class GameTestCase extends UnitTestCase {
     function testTurnWest(){
        $g = new MyGame();
        $g->changeDirection('w');
-       $this->assertTrue($g->currentdirection != $g->lastdirection);
+       $this->assertTrue($g->currentdir != $g->lastdirection);
              print $this->onFunctionEnd(__FUNCTION__);
     
     }
@@ -46,19 +46,19 @@ class GameTestCase extends UnitTestCase {
     function testCantTurn180(){
        $g = new MyGame();
        $g->changeDirection('n');
-       $this->assertFalse($g->currentdirection == 'n');
+       $this->assertFalse($g->currentdir == 'n');
        $g->changeDirection('s'); // set back
 
        $g->changeDirection('s');
-       $this->assertTrue($g->currentdirection == 's');
+       $this->assertTrue($g->currentdir == 's');
        $g->changeDirection('s'); // set back
 
        $g->changeDirection('e');
-       $this->assertTrue($g->currentdirection == 'e');
+       $this->assertTrue($g->currentdir == 'e');
        $g->changeDirection('s'); // set back
 
        $g->changeDirection('w');
-       $this->assertTrue($g->currentdirection == 'w');
+       $this->assertTrue($g->currentdir == 'w');
 
              print $this->onFunctionEnd(__FUNCTION__);
     
@@ -74,7 +74,7 @@ class GameTestCase extends UnitTestCase {
     function testChangePositionY(){
       $g = new MyGame();
       $g->changePosition(1);
-      $this->assertTrue($g->currentposition != $g->lastposition);
+      $this->assertTrue($g->currentpos != $g->lastposition);
             print $this->onFunctionEnd(__FUNCTION__);
     
     }
@@ -83,7 +83,7 @@ class GameTestCase extends UnitTestCase {
       $g = new MyGame();
       $g->changeDirection('e');
       $g->changePosition(5);
-      $this->assertTrue($g->currentposition != $g->lastposition);
+      $this->assertTrue($g->currentpos != $g->lastposition);
       print $this->onFunctionEnd(__FUNCTION__);
     }
     
@@ -91,7 +91,7 @@ class GameTestCase extends UnitTestCase {
       $g = new MyGame();
       $originalposition = $g->getPosition();
       $g->changePosition(-1); // backwards=up since default is south
-      $this->assertTrue(($g->currentposition == $originalposition ) );
+      $this->assertTrue(($g->currentpos == $originalposition ) );
 
       print "==== End ".__FUNCTION__. "====\n";
       print $this->onFunctionEnd(__FUNCTION__);
@@ -101,7 +101,7 @@ class GameTestCase extends UnitTestCase {
       $g = new MyGame();
       $distance = 1;
       $g->changePosition($distance);
-      $this->assertTrue( ($g->currentposition[1] - $distance) == $g->lastposition[1]);
+      $this->assertTrue( ($g->currentpos[1] - $distance) == $g->lastposition[1]);
       //print " Curr = ".$g->currentposition[1];
       //print "/ Last = ".$g->lastposition[1]."\n";
       print $this->onFunctionEnd(__FUNCTION__);

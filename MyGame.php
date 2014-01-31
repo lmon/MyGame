@@ -11,7 +11,7 @@ class MyGame{
  	var $history = array();
  	var $gameStatus = 'unfinished';
 
-	function __construct($d=array(10,12),$obs=array()){
+	function __construct($d=array(10,12), $obs=array()){
 		$this->lastdirection = $this->currentdir;
 		$this->lastposition = $this->currentpos;
 		$this->board = new MyBoard($d, $obs);			
@@ -51,6 +51,9 @@ class MyGame{
 	function getPosition(){
 		return $this->currentpos;
 	}
+	function getObstructions(){
+		return $this->board->obstructions;
+	}
 /*
 move function
 takes a number as argument
@@ -60,23 +63,10 @@ takes a number as argument
 */
 	function changePosition($m){
 		$this->lastposition = $this->currentpos;
-		$result;
-		$result = $result ?: $this->onMoveIsOutofBounds($m);
-		$result = $result ?: $this->onMoveIsACollision();
-		$result = $result ?: $this->onMoveIsAtFinish();
-
-
-		if($this->lastposition != $this->currentpos){
-			array_push($this->history, array('move'=>$m));
-		}else{
-			array_push($this->history, array('failed move due to '.$result => $m ) ) ;
-		}
-		//print " currentpos = ".print_r($this->currentpos,true) ."\n";
-		return $this->currentpos;
-	}
-
-	function onMoveIsOutofBounds($m){
-		$newpos;
+		$temppos = $this->currentpos;
+		$result = "";
+ 
+ 		$newpos;
 		// which data to update depends on which direction they are heading
 		$slot = (($this->currentdir == 's') || ( $this->currentdir == 'n' ))?1:0;
 		// whether it is a pos or negative move depends on which direction they are headed
@@ -91,60 +81,80 @@ takes a number as argument
 		}else{
 			$newpos = ($dir == 1)?($this->currentpos[$slot]+$m) : ($this->currentpos[$slot]-$m);
 		}
+
+		$temppos[$slot] = $newpos;
+
+		if($this->onMoveIsOutofBounds($newpos,$boundry)){
+			$result = "out-of-bounds";
+		}		
+		if($this->onMoveIsACollision($temppos)){
+			$result = "collision";
+		}
+		if($this->onMoveIsAtFinish($temppos)){
+			//print "==A==";
+			$result = "finished";
+			$this->gameStatus = "finished";
+		}
+
+		if($result == ""){			 
+			$this->currentpos[$slot]= $newpos; 
+			array_push($this->history, array('move'=>$m));
+		}else{
+			 
+			//provide Feedback
+			//print "==B== $result ";
+			 
+			array_push($this->history, array('failed move due to '.$result => $m ) ) ;
+		}
+		//print " currentpos = ".print_r($this->currentpos,true) ."\n";
+		return array_keys( $this->history[count($this->history)-1])[0];
+	}
+
+	function onMoveIsOutofBounds($newpos,$boundry){
+		
 		// if they are not out of bounds, update the possition
 		if(($newpos >= 0)&&($newpos<=$boundry)){ 
-			$this->currentpos[$slot]= $newpos;//$this->currentpos[1]+$m;
+			return false;
 		}else{
 			//
-			print "A ".($newpos >= 0)?"True \n":"False \n"; 
+			/*print "A ".($newpos >= 0)?"True \n":"False \n"; 
 			print "B ".($newpos<=$this->board->getHeight())?"True \n":"False \n"; 
 			print "C ".($newpos<=$this->board->getWidth())?"True \n":"False \n";  
 
 			print "out of bounds trying to move $m spots to $newpos boundry is $boundry. Direction is $slot [".$this->currentdir."] (".$this->board->getHeight()."/".$this->board->getWidth().")  \n";
-			return "out-of-bounds";
+			 */
+			return true;
 		}
 	
-  
-		//y axis
-		/*if($this->currentdir == 's'){  
-			$newpos = $this->currentpos[1]+$m;
-			if($newpos >= 0 && $newpos<=$this->board->getHeight() ){ 
-					$this->currentpos[1]=$this->currentpos[1]+$m;
-				}
-		}elseif ( $this->currentdir == 'n' ){
-			$newpos = $this->currentpos[1]-$m;	
-			if($newpos >= 0 && $newpos<=$this->board->getHeight()){
-				$this->currentpos[1]=$this->currentpos[1]-$m;
-			}
-		//x axis
-		}elseif ( $this->currentdir == 'e' ){
-			$newpos = $this->currentpos[0]+$m;	
-			if($newpos >= 0 && $newpos<=$this->board->getWidth()){
-				$this->currentpos[0]=$this->currentpos[0]+$m;
-			}
-
-		}elseif ( $this->currentdir == 'w' ){ 
-			$newpos = $this->currentpos[0]-$m;	
-			if($newpos >= 0 && $newpos<=$this->board->getWidth()){
-				$this->currentpos[0]=$this->currentpos[0]-$m;
-			}
+	}
+	function onMoveIsACollision($tmppos){
+		 
+		/*print __FUNCTION__ ." \n ";
+		print "Curent Pos: ";
+		print_r($tmppos);
+		print "obstructions: ";
+		print_r($this->board->obstructions);
+		
+		if (in_array($tmppos, array_values($this->board->obstructions))) {
+			print "==collision==";
+		} else{
+			print "NO COLLISION: ";
+		print "===========\n";
+		print "Curent Pos: ";
+		print_r($tmppos);
+		print "obstructions: ";
+		print_r($this->board->obstructions);
+		print "===========\n";
+			
 		}*/
-
-		return true;
-	}
-	function onMoveIsACollision(){
-		if (in_array($this->currentpos, $this->board->obstructions)) {
-			print "collision";
-		}
-		return (in_array($this->currentpos, $this->board->obstructions))?false : true;
+		return (in_array($tmppos, array_values($this->board->obstructions)))?true : false;
 	}
 	
-	function onMoveIsAtFinish(){
-		if($this->currentpos = $this->board->getFinish()){
-			print "finished";
-		}
-
-		return ($this->currentpos = $this->board->getFinish())?false : true;
+	function onMoveIsAtFinish($temppos){
+		if($temppos == $this->board->getFinish()){
+			//print "finished";
+		} 
+		return ($temppos == $this->board->getFinish())?true : false;
 	}
 
 	function getPlayerStatus(){

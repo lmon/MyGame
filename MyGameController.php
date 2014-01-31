@@ -16,7 +16,7 @@ class MyGameController{
 	}
 
 	function gameStart(){
-		$this->game = new MyGame();
+		$this->game = new MyGame(array(10,12), array(array(6,6),array(3,7)));
 		$this->gameStatus = 'started';
 	}
 
@@ -30,12 +30,13 @@ class MyGameController{
 		$this->gameIsRunning = true;
 
 		$count = 0;
-
+		$feedback ;
+			
 		while(($this->gameIsRunning == true) && ($count < $this->maxloops) ){
 
 			$count++;
 			
-			echo "Make your move, partner: \n";
+ 			echo " => $feedback \nMake your move, partner: \n";
 			$handle = fopen ("php://stdin","r");
 			$line = fgets($handle);
 		 
@@ -51,12 +52,11 @@ class MyGameController{
 			
 			}elseif( preg_match('/(move) ([0-9]+)/',trim($line), $matches) ){
 					print "got ". $matches[2] ."\n";
-					$this->playerMove($matches[2]);
-			
+					$feedback = $this->playerMove($matches[2]);
+					
 			}elseif( preg_match('/(turn) ([news])/',trim($line), $matches) ){
 					print "got ". $matches[2]."\n";
-					$this->playerTurn($matches[2]);
-			
+					$feedback = $this->playerTurn($matches[2]);	
 			}elseif(trim($line) == "full"){ 
 				    print_r($this->playerFullStatus());
 
@@ -84,9 +84,7 @@ class MyGameController{
 
 	function playerMove($m = 1){
 		if($this->gameStatus == 'finished'){$this->rejectMove();}		
-
-		$this->game->changePosition( $m );
-
+		$r = $this->game->changePosition( $m );
 		//finished?
 		if($this->game->getPosition() == $this->game->getFinish()){
 			$this->gameStatus = 'finished';
@@ -94,15 +92,13 @@ class MyGameController{
 			$this->gameEnd();		
 		}
 
-		//dead?
-
-		//out of turns etc?
+		return $r;
 	}
 
 	function playerTurn($d){
 		if($this->gameStatus == 'finished'){$this->rejectMove();}		
 		if($d!=null){ 
-			$this->game->changeDirection( $d );
+			return $this->game->changeDirection( $d );
 		}
 	}
 
@@ -122,18 +118,23 @@ class MyGameController{
 		$status = "Board: \n";
 		$status .= "Direction: ".$this->game->currentdirection."\n";
 		$status .= "No. moves: ".count($this->playerHistory())."\n";
-		
+			// draw the board 
 			for($i=0; $i<=$this->game->board->dimensions[1]; $i++){
 				for($j=0; $j<=$this->game->board->dimensions[0]; $j++){
 					if(array($j, $i) == $this->game->getPosition()){
 						$status .= "[X]";
+					}elseif(in_array( array($j, $i), $this->game->getObstructions())){
+
+						$status .= "[0]";
+
 					}else{
 						$status .= "[ ]";						
 					}				
 				}	
 				$status .= "$i\n";
 			}
-
+ 
+print_r($this->game->getObstructions());
 		return $status."\n";
 	}
 

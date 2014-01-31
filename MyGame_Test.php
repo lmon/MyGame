@@ -75,8 +75,8 @@ class GameTestCase extends UnitTestCase {
       $g = new MyGame();
       $g->changePosition(1);
       $this->assertTrue($g->currentpos != $g->lastposition);
-            print $this->onFunctionEnd(__FUNCTION__);
-    
+
+      print $this->onFunctionEnd(__FUNCTION__);
     }
 
     function testChangePositionX(){
@@ -124,7 +124,44 @@ class GameTestCase extends UnitTestCase {
        ) 
       );
 
-      print_r($g->getPlayerStatus());
+      //print_r($g->getPlayerStatus());
+      print $this->onFunctionEnd(__FUNCTION__);
+    }
+
+    function testCanCollide(){
+      $g = new MyGame(array(10,12), array(array(3,3)));
+      $g->changePosition(1);
+      $g->changePosition(2);
+      $g->changeDirection('e');
+      $g->changePosition(3);
+      $g->changePosition(5);
+
+      //print_r($g->getPlayerStatus());
+
+      $this->assertTrue( $g->history == array(
+          array('move'=>1),
+          array('move'=>2),
+          array('direction' => 'e'),
+          array('failed move due to collision' => 3),
+          array('move'=>5)
+       ) 
+      );
+
+      print $this->onFunctionEnd(__FUNCTION__);
+    }
+
+    function testCanFinish(){
+      $g = new MyGame(array(10,12), array(array(3,3)));
+      $g->changePosition(12);
+      $g->changeDirection('e');
+      $g->changePosition(10);
+
+      $s = $g->getPlayerStatus();
+
+      //print_r($g->getPlayerStatus());
+
+      $this->assertTrue(  $s['gameStatus']== 'finished'   );
+
       print $this->onFunctionEnd(__FUNCTION__);
     }
 
